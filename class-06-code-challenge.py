@@ -90,7 +90,7 @@ def main():
             print("Decrypted message:", decrypted_message)
     else:
         # Print an error message for invalid mode selection
-        print(""Invalid mode selection.")
+        print("Invalid mode selection.")
 
 # Execute the main function when the script is
 if __name__ == '__main__':
