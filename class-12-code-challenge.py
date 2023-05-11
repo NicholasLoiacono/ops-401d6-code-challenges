@@ -16,6 +16,9 @@ import ipaddress
 import sys
 
 def scan_port(ip, port):
+    # ip: The target IP address (string)
+    # port: The target port (integer)
+
     # Create an IP packet and a TCP packet with the SYN flag set
     ip_packet = IP(dst=ip)
     tcp_packet = TCP(dport=port, flags='S')
@@ -23,6 +26,7 @@ def scan_port(ip, port):
     # Send the packet and receive a response
     response = sr1(ip_packet/tcp_packet, timeout=2, verbose=0)
 
+    # Check the response and print appropriate message
     if response is not None:
         if response[TCP].flags == 0x12:
             # Send a RST packet to graciously close the open connection
@@ -34,6 +38,8 @@ def scan_port(ip, port):
         print(f"Port {port}: Filtered and silently dropped")
 
 def ping_sweep(network):
+    # network: The target network address (string)
+
     # Create a list of all addresses in the given network
     net = ipaddress.ip_network(network)
     hosts = list(net.hosts())
@@ -41,11 +47,13 @@ def ping_sweep(network):
     # Initialize count of online hosts
     online_hosts = 0
 
+    # Ping all addresses and print appropriate message
     for host in hosts:
         # Send ICMP echo request to each address and wait for a response
         pkt = IP(dst=str(host))/ICMP()
         reply = sr1(pkt, timeout=2, verbose=0)
-        
+
+        # Check the response
         if reply is None:
             print(f"{host} is down or not responding.")
         elif reply.haslayer(ICMP):
@@ -55,10 +63,14 @@ def ping_sweep(network):
                 print(f"{host} is responding.")
                 online_hosts += 1
 
+    # Print the total number of online hosts
     print(f"Total online hosts: {online_hosts}")
 
 def main():
+    # Ask the user to select a mode
     mode = input("Choose mode:\n1. TCP Port Range Scanner\n2. ICMP Ping Sweep\n")
+
+    # Perform actions based on the selected mode
     if mode == "1":
         host_ip = input("Enter the host IP: ")
         ports = range(1, 1024)
@@ -73,7 +85,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 # End
